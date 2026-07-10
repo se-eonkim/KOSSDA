@@ -86,3 +86,10 @@ KOLD 8개 표적 집단의 변별어를 [log-odds ratio + Dirichlet prior](https
 - KLUE-RoBERTa (Park et al. 2021) / fastText cc.ko.300 (Bojanowski et al. 2017) — Hugging Face / fasttext.cc
 
 전체 참고문헌은 [출품작 PDF 11페이지](04_output/final_files/2026공모전_출품작PDF_김세언.pdf) 참고.
+
+### fastText 모델 (용량 문제로 gitignore됨)
+
+[`03_analysis/ai_model/m3_fasttext_weat.py`](03_analysis/ai_model/m3_fasttext_weat.py)를 재현하려면 fastText 한국어 사전학습 벡터(cc.ko.300, gzip 텍스트 포맷, 약 1.2GB)를 아래에서 받아 `03_analysis/ai_model/fasttext/cc.ko.300.vec.gz` 경로에 두면 된다.
+
+- 다운로드: <https://dl.fbaipublicfiles.com/fasttext/vectors-crawl/cc.ko.300.vec.gz> (공식 배포처: <https://fasttext.cc/docs/en/crawl-vectors.html>)
+- 출처: Bojanowski et al. (2017), *Enriching Word Vectors with Subword Information*
