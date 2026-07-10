@@ -1,8 +1,8 @@
 # AI 모델 편향 분석 — 코드 인덱스
 
-파일명이 실행 순서(탐색 s1~s5 → 본분석 m1~m3)를 따른다. 본분석(m1~m3) 결과가 최종 결과물에 쓰였고, 탐색(s2~s5)은 그 결과에 도달하기까지의 방법 선택 과정(특히 contextual embedding이 실패한 이유)을 남긴 기록이다.
+파일명이 실행 순서(탐색 s1\~s5 → 본분석 m1\~m3)를 따른다. 본분석(m1\~m3) 결과가 최종 결과물에 쓰였고, 탐색(s2\~s5)은 그 결과에 도달하기까지의 방법 선택 과정(특히 contextual embedding이 실패한 이유)을 남긴 기록이다.
 
-## 본분석 (m1~m3)
+## 본분석 (m1\~m3)
 
 | 파일 | 역할 | 출력 |
 |---|---|---|
@@ -13,7 +13,7 @@
 | [`m3_fasttext_weat.py`](m3_fasttext_weat.py) | fastText(cc.ko.300)로 m1 재현 — 서로 다른 두 모델에서 같은 방향 결과가 나오는지 확인하는 robustness 체크 | — |
 | [`export_results.py`](export_results.py) | m1(KLUE)+m3(FastText)+m2(MLM) 결과를 시각화용 CSV로 통합 | — |
 
-## 탐색 — static vs. contextual 방법 선택 과정 (s2~s5)
+## 탐색 — static vs. contextual 방법 선택 과정 (s2\~s5)
 
 WEAT를 처음에 contextual sentence embedding(KoSimCSE)으로 시도했으나 신호가 죽는 것을 확인하고, 정적 임베딩(m1)으로 전환하게 된 과정이다. [README의 static/contextual dissociation 발견](../../README.md#핵심-발견)의 근거 코드.
 
