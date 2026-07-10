@@ -41,6 +41,27 @@ KOLD 8개 표적 집단의 변별어를 [log-odds ratio + Dirichlet prior](https
 **4. AI — 경험·감정 없이도 학습된 연관으로 남는다**
 [WEAT](https://www.science.org/doi/10.1126/science.aal4230)(Caliskan et al. 2017) effect size로 표적 집단과 부정/긍정 어휘 집합 사이 연관을 측정한 결과, 6개 표적 모두 대조군(d=0.13) 기준을 초과했다. 특히 **흑인 d=2.14로 최댓값** — 한국어 KOLD 코퍼스의 변별어 분석에서 흑인 자생 비하어는 거의 발견되지 않고 한국 내 인구 비율도 0.1% 미만인데도, 모델 내부 표상에서는 가장 강한 부정 연관을 보였다. 직접 경험이 없는 편견이 텍스트를 통해 임베딩 공간에 그대로 이식된 사례로 해석했다. MLM 빈칸 채우기(`"○○은 ___다"`)에서도 표적 집단에 부정어가 유의하게 쏠렸다.
 
+같은 측정을 contextual sentence embedding(KoSimCSE, CLS/mean pooling × centering 조합 4종)으로도 시도했으나 모두 비유의했다(흑인 d=-0.50~0.00, p>0.49). 정적 임베딩에서만 신호가 나타난 것은 문장 표상 공간의 anisotropy가 valence 신호를 누르는 현상과 일치한다(May et al. 2019, SEAT). 표상 방식에 따라 같은 편향이 보이거나 안 보인다는 것 자체가 하나의 관찰이다.
+
+---
+
+## 검증 사례: 시간축 가설 재검토
+
+흑인 표적 댓글이 BLM 발생 시기(2020-05~06)에 몰려 있는지 `date` 필드로 확인했다. 그런데 무관한 다른 표적(무슬림·여성) 댓글까지 전부 2020년 비중이 낮고 2021-07~08·2022-01~02에 몰려 있어, `date`가 댓글 작성 시점이 아니라 수집(크롤링) 시점일 가능성이 드러났다. 이 시간축 가설은 근거로 쓰지 않았다.
+
+대신 흑인 표적 댓글 175개 중 86%가 국제뉴스(BLM·미국 인종 이슈) 제목에, 89%가 YouTube 출처에 달려 있다는 맥락 분석으로 "매개된 담론" 해석의 근거를 대체했다.
+
+> 검증 기준 전체와 다른 사례는 [`METHODOLOGY.md`](03_analysis/METHODOLOGY.md) 참고.
+
+---
+
+## Research Trajectory
+
+이 프로젝트의 언어 축(KOLD 분석)은 튀빙겐 대학교(University of Tübingen)에서 진행한 한국어·이탈리아어·신할라어 비교 혐오표현 연구(cross-linguistic collaboration)에서 시작됐다 — [kold-hate-speech-analysis](https://github.com/se-eonkim/kold-hate-speech-analysis). 그 연구의 두 관찰(여성 = 매개 허브, 흑인 표적 = 수입된 프레임)을 이어받아 이 프로젝트에서 바뀐 부분:
+
+- **방법론:** 정성적 concept taxonomy 프레임 코딩 → log-odds ratio(Monroe et al. 2008, Dirichlet prior) 기반 통계적 유의성 검정
+- **범위:** 언어 축 단일 분석 → 사회조사(KOSSDA) 기준선 + AI 모델(WEAT/MLM) 층위를 더한 3층 구조
+
 ---
 
 ## 방법론 키워드
@@ -48,7 +69,7 @@ KOLD 8개 표적 집단의 변별어를 [log-odds ratio + Dirichlet prior](https
 이 프로젝트에서 다룬 방법론은 아래 방향의 리서치와 맞닿아 있다:
 
 - **Embedding-based bias probing** — WEAT (word/sentence embedding association test), permutation test + FDR 다중비교보정
-- **Static vs. contextual representation의 방법론적 선택** — 문장 수준 맥락 노이즈를 배제하고 어휘 수준 편향 신호를 분리하기 위해 정적 임베딩(fastText)을 채택. 이 선택 자체가 분석 대상(신호의 종류)을 규정한다는 점을 한계에서 명시
+- **Static vs. contextual representation dissociation** — 동일한 WEAT를 contextual embedding(KoSimCSE, pooling×centering 4조합)에서 먼저 시도해 신호 소실(p>0.49)을 확인한 뒤, 정적 임베딩(KLUE-RoBERTa input embedding·fastText)에서 유의 신호(d≈2.1)를 확인했다(May et al. 2019, SEAT의 anisotropy 관찰과 일치)
 - **Masked language model probing** — KLUE-RoBERTa fill-mask
 - **Distributional semantics** — log-odds ratio with informative Dirichlet prior (Monroe et al. 2008, "Fightin' Words")
 - **Graph-based structural analysis** — weighted co-occurrence network, betweenness centrality (NetworkX)
