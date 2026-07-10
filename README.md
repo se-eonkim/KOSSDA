@@ -41,15 +41,15 @@ KOLD 8개 표적 집단의 변별어를 [log-odds ratio + Dirichlet prior](https
 **4. AI — 경험·감정 없이도 학습된 연관으로 남는다**
 [WEAT](https://www.science.org/doi/10.1126/science.aal4230)(Caliskan et al. 2017) effect size로 표적 집단과 부정/긍정 어휘 집합 사이 연관을 측정한 결과, 6개 표적 모두 대조군(d=0.13) 기준을 초과했다. 특히 **흑인 d=2.14로 최댓값** — 한국어 KOLD 코퍼스의 변별어 분석에서 흑인 자생 비하어는 거의 발견되지 않고 한국 내 인구 비율도 0.1% 미만인데도, 모델 내부 표상에서는 가장 강한 부정 연관을 보였다. 직접 경험이 없는 편견이 텍스트를 통해 임베딩 공간에 그대로 이식된 사례로 해석했다. MLM 빈칸 채우기(`"○○은 ___다"`)에서도 표적 집단에 부정어가 유의하게 쏠렸다.
 
-같은 측정을 contextual sentence embedding(KoSimCSE, CLS/mean pooling × centering 조합 4종)으로도 시도했으나 모두 비유의했다(흑인 d=-0.50~0.00, p>0.49). 정적 임베딩에서만 신호가 나타난 것은 문장 표상 공간의 anisotropy가 valence 신호를 누르는 현상과 일치한다(May et al. 2019, SEAT). 표상 방식에 따라 같은 편향이 보이거나 안 보인다는 것 자체가 하나의 관찰이다.
+같은 측정을 contextual sentence embedding(KoSimCSE, CLS/mean pooling × centering 조합 4종)으로도 시도했으나 모두 비유의했다(흑인 d=-0.50~0.00, p>0.49, [`s4_signal_result.txt`](03_analysis/ai_model/s4_signal_result.txt)). 정적 임베딩에서만 신호가 나타난 것은 문장 표상 공간의 anisotropy가 valence 신호를 누르는 현상과 일치한다(May et al. 2019, SEAT). 표상 방식에 따라 같은 편향이 보이거나 안 보인다는 것 자체가 하나의 관찰이다. 코드: [`03_analysis/ai_model/`](03_analysis/ai_model/) (탐색 s2~s5 → 본분석 m1~m3 순서로 인덱스 정리됨).
 
 ---
 
 ## 검증 사례: 시간축 가설 재검토
 
-흑인 표적 댓글이 BLM 발생 시기(2020-05~06)에 몰려 있는지 `date` 필드로 확인했다. 그런데 무관한 다른 표적(무슬림·여성) 댓글까지 전부 2020년 비중이 낮고 2021-07~08·2022-01~02에 몰려 있어, `date`가 댓글 작성 시점이 아니라 수집(크롤링) 시점일 가능성이 드러났다. 이 시간축 가설은 근거로 쓰지 않았다.
+흑인 표적 댓글이 BLM 발생 시기(2020-05~06)에 몰려 있는지 `date` 필드로 확인했다([`gate1_black_dates.py`](03_analysis/language_kold/gate1_black_dates.py) → [`gate1_dates_result.txt`](03_analysis/language_kold/gate1_dates_result.txt)). 그런데 무관한 다른 표적(무슬림·여성) 댓글까지 전부 2020년 비중이 낮고 2021-07~08·2022-01~02에 몰려 있어, `date`가 댓글 작성 시점이 아니라 수집(크롤링) 시점일 가능성이 드러났다. 이 시간축 가설은 근거로 쓰지 않았다.
 
-대신 흑인 표적 댓글 175개 중 86%가 국제뉴스(BLM·미국 인종 이슈) 제목에, 89%가 YouTube 출처에 달려 있다는 맥락 분석으로 "매개된 담론" 해석의 근거를 대체했다.
+대신 흑인 표적 댓글 175개 중 86%가 국제뉴스(BLM·미국 인종 이슈) 제목에, 89%가 YouTube 출처에 달려 있다는 맥락 분석으로 "매개된 담론" 해석의 근거를 대체했다([`gate1_black_titles.py`](03_analysis/language_kold/gate1_black_titles.py)).
 
 > 검증 기준 전체와 다른 사례는 [`METHODOLOGY.md`](03_analysis/METHODOLOGY.md) 참고.
 
@@ -94,7 +94,7 @@ KOLD 8개 표적 집단의 변별어를 [log-odds ratio + Dirichlet prior](https
 03_analysis/
   society_kossda/        KOSSDA 사회조사 전처리·분석 코드
   language_kold/          KOLD 변별어·co-targeting network 분석
-  ai_model/                WEAT/MLM 기반 AI 모델 편향 분석
+  ai_model/                WEAT/MLM 기반 AI 모델 편향 분석 (README.md에 코드 인덱스)
   METHODOLOGY.md           검증 기준 + 반증 사례
 04_output/final_files/  출품 최종 PPT·PDF·요약문
 ```

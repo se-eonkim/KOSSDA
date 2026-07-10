@@ -28,8 +28,9 @@
 
 ### AI/임베딩 분석의 control 설계
 - **비약:** target–attribute cosine similarity 단독으로 "AI가 혐오를 배웠다"고 단정
-- **타당:** control(중립) 프레임 대비 association 차이를 permutation test로 유의성 검정한 뒤에만 해석. `m1_static_weat.py`는 `scipy.stats.false_discovery_control`로 다중비교 보정까지 적용
+- **타당:** control(중립) 프레임 대비 association 차이를 permutation test로 유의성 검정한 뒤에만 해석. [`m1_static_weat.py`](ai_model/m1_static_weat.py)는 `scipy.stats.false_discovery_control`로 다중비교 보정까지 적용
 - **근거:** Caliskan et al. (2017), *Science* 356(6334) — WEAT
+- 정적/contextual 임베딩 중 정적을 채택하게 된 비교 과정은 [`ai_model/README.md`](ai_model/README.md) 참고
 
 ## 2. 반증 사례: "black 수입 프레임" 게이트
 
@@ -37,7 +38,7 @@
 
 **질문:** 흑인 표적 댓글은 국내에서의 직접 경험을 다루는가, 아니면 미국발 뉴스·영상 등 매개된 담론인가?
 
-**절차:** 흑인(`race-black`) 표적 댓글 175개(단독 169 + 다중표적 6)의 기사·영상 제목을 국제뉴스 키워드로 분류.
+**절차:** 흑인(`race-black`) 표적 댓글 175개(단독 169 + 다중표적 6)의 기사·영상 제목을 국제뉴스 키워드로 분류. 코드: [`gate1_black_titles.py`](language_kold/gate1_black_titles.py).
 
 | 검증 | 결과 |
 |---|---|
@@ -49,7 +50,7 @@
 
 **두 번째 가설(기각):** "BLM 발생 시기(2020-05~06)에 흑인 관련 댓글이 집중됐을 것이다."
 
-`date` 필드를 확인한 결과, black(175개)뿐 아니라 islam(1,059개)·female(1,129개) 등 무관한 집단들도 전부 2020년이 거의 없고 2021-07~08, 2022-01~02에 인위적으로 몰려 있었다. 즉 `date`는 댓글 작성 시점이 아니라 **크롤링/수집 시점**으로 추정되며, 시간축 근거로 쓸 수 없는 필드였다. 이 가설은 **폐기**하고, 시간축 대신 위 맥락 분석(86%/89%)만을 근거로 남겼다.
+`date` 필드를 확인한 결과([`gate1_black_dates.py`](language_kold/gate1_black_dates.py) → [`gate1_dates_result.txt`](language_kold/gate1_dates_result.txt)), black(175개)뿐 아니라 islam(1,059개)·female(1,129개) 등 무관한 집단들도 전부 2020년이 거의 없고 2021-07~08, 2022-01~02에 인위적으로 몰려 있었다. 즉 `date`는 댓글 작성 시점이 아니라 **크롤링/수집 시점**으로 추정되며, 시간축 근거로 쓸 수 없는 필드였다. 이 가설은 **폐기**하고, 시간축 대신 위 맥락 분석(86%/89%)만을 근거로 남겼다.
 
 이 과정은 "그럴듯해 보이는 수치라도 필드의 실제 의미를 검증하지 않으면 근거로 쓸 수 없다"는 점을 보여준다 — `date` 필드가 크롤링 시점이라는 사실은 KOLD 원 논문에도 명시되어 있지 않아 직접 분포를 뜯어봐야 드러났다.
 
