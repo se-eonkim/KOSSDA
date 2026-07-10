@@ -1,0 +1,121 @@
+=== male 노드의 실제 엣지 (weight = 같이 공격한 댓글 수) ===
+  male ─── feminist             weight=18
+  male ─── female               weight=18
+  male ─── asian                weight=4
+  male ─── islam                weight=2
+  male ─── queer                weight=2
+  male ─── conservative         weight=2
+  male ─── homosexual           weight=2
+  male ─── white                weight=2
+  male ─── chinese              weight=1
+  male ─── christian            weight=1
+  male ─── indian               weight=1
+  male ─── southeast_asian      weight=1
+
+=== female 노드의 실제 엣지 (비교용) ===
+  female ─── feminist             weight=46
+  female ─── male                 weight=18
+  female ─── asian                weight=6
+  female ─── southeast_asian      weight=6
+  female ─── progressive          weight=5
+  female ─── chinese              weight=4
+  female ─── islam                weight=4
+  female ─── white                weight=4
+  female ─── indian               weight=3
+  female ─── queer                weight=2
+  female ─── black                weight=2
+  female ─── christian            weight=2
+  female ─── homosexual           weight=1
+
+=== 왜 male BC=0인가: 최단경로 직접 확인 ===
+male 이웃 노드들 사이에 direct edge가 있나?
+male 이웃: ['asian', 'chinese', 'christian', 'conservative', 'female', 'feminist', 'homosexual', 'indian', 'islam', 'queer', 'southeast_asian', 'white']
+
+  feminist ─── christian: direct edge 없음 → male 경유 가능
+  feminist ─── female: direct거리=0.022, male경유=0.111 → 최단=직접
+  feminist ─── queer: direct거리=0.250, male경유=0.556 → 최단=직접
+  feminist ─── conservative: direct거리=1.000, male경유=0.556 → 최단=male경유
+  feminist ─── homosexual: direct거리=0.200, male경유=0.556 → 최단=직접
+  feminist ─── asian: direct edge 없음 → male 경유 가능
+  feminist ─── islam: direct거리=1.000, male경유=0.556 → 최단=male경유
+  feminist ─── white: direct edge 없음 → male 경유 가능
+  feminist ─── indian: direct edge 없음 → male 경유 가능
+  feminist ─── chinese: direct거리=0.333, male경유=1.056 → 최단=직접
+  feminist ─── southeast_asian: direct edge 없음 → male 경유 가능
+  christian ─── female: direct거리=0.500, male경유=1.056 → 최단=직접
+  christian ─── queer: direct edge 없음 → male 경유 가능
+  christian ─── conservative: direct edge 없음 → male 경유 가능
+  christian ─── homosexual: direct edge 없음 → male 경유 가능
+  christian ─── asian: direct edge 없음 → male 경유 가능
+  christian ─── islam: direct거리=0.200, male경유=1.500 → 최단=직접
+  christian ─── white: direct edge 없음 → male 경유 가능
+  christian ─── indian: direct edge 없음 → male 경유 가능
+  christian ─── chinese: direct edge 없음 → male 경유 가능
+  christian ─── southeast_asian: direct edge 없음 → male 경유 가능
+  female ─── queer: direct거리=0.500, male경유=0.556 → 최단=직접
+  female ─── conservative: direct edge 없음 → male 경유 가능
+  female ─── homosexual: direct거리=1.000, male경유=0.556 → 최단=male경유
+  female ─── asian: direct거리=0.167, male경유=0.306 → 최단=직접
+  female ─── islam: direct거리=0.250, male경유=0.556 → 최단=직접
+  female ─── white: direct거리=0.250, male경유=0.556 → 최단=직접
+  female ─── indian: direct거리=0.333, male경유=1.056 → 최단=직접
+  female ─── chinese: direct거리=0.250, male경유=1.056 → 최단=직접
+  female ─── southeast_asian: direct거리=0.167, male경유=1.056 → 최단=직접
+  queer ─── conservative: direct edge 없음 → male 경유 가능
+  queer ─── homosexual: direct거리=0.067, male경유=1.000 → 최단=직접
+  queer ─── asian: direct edge 없음 → male 경유 가능
+  queer ─── islam: direct edge 없음 → male 경유 가능
+  queer ─── white: direct edge 없음 → male 경유 가능
+  queer ─── indian: direct edge 없음 → male 경유 가능
+  queer ─── chinese: direct edge 없음 → male 경유 가능
+  queer ─── southeast_asian: direct edge 없음 → male 경유 가능
+  conservative ─── homosexual: direct edge 없음 → male 경유 가능
+  conservative ─── asian: direct edge 없음 → male 경유 가능
+  conservative ─── islam: direct edge 없음 → male 경유 가능
+  conservative ─── white: direct거리=1.000, male경유=1.000 → 최단=직접
+  conservative ─── indian: direct edge 없음 → male 경유 가능
+  conservative ─── chinese: direct edge 없음 → male 경유 가능
+  conservative ─── southeast_asian: direct edge 없음 → male 경유 가능
+  homosexual ─── asian: direct edge 없음 → male 경유 가능
+  homosexual ─── islam: direct거리=0.500, male경유=1.000 → 최단=직접
+  homosexual ─── white: direct edge 없음 → male 경유 가능
+  homosexual ─── indian: direct edge 없음 → male 경유 가능
+  homosexual ─── chinese: direct edge 없음 → male 경유 가능
+  homosexual ─── southeast_asian: direct edge 없음 → male 경유 가능
+  asian ─── islam: direct거리=1.000, male경유=0.750 → 최단=male경유
+  asian ─── white: direct edge 없음 → male 경유 가능
+  asian ─── indian: direct edge 없음 → male 경유 가능
+  asian ─── chinese: direct edge 없음 → male 경유 가능
+  asian ─── southeast_asian: direct edge 없음 → male 경유 가능
+  islam ─── white: direct edge 없음 → male 경유 가능
+  islam ─── indian: direct edge 없음 → male 경유 가능
+  islam ─── chinese: direct거리=0.200, male경유=1.500 → 최단=직접
+  islam ─── southeast_asian: direct edge 없음 → male 경유 가능
+  white ─── indian: direct edge 없음 → male 경유 가능
+  white ─── chinese: direct edge 없음 → male 경유 가능
+  white ─── southeast_asian: direct edge 없음 → male 경유 가능
+  indian ─── chinese: direct거리=0.500, male경유=2.000 → 최단=직접
+  indian ─── southeast_asian: direct edge 없음 → male 경유 가능
+  chinese ─── southeast_asian: direct edge 없음 → male 경유 가능
+
+=== 전체 BC 재확인 ===
+  female               0.5673  █████████████████
+  feminist             0.4035  ████████████
+  progressive          0.3158  █████████
+  islam                0.1988  █████
+  others               0.1988  █████
+  christian            0.1053  ███
+  chinese              0.0760  ██
+  korean_chinese       0.0292  
+  male                 0.0000  
+  homosexual           0.0000  
+  queer                0.0000  
+  conservative         0.0000  
+  indian               0.0000  
+  southeast_asian      0.0000  
+  asian                0.0000  
+  black                0.0000  
+  white                0.0000  
+  socioeconomic_status 0.0000  
+  age                  0.0000  
+  catholic             0.0000  

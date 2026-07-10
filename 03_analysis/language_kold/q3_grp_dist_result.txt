@@ -1,0 +1,62 @@
+=== GRP raw (단독표적+OFF_span, 상위 40) ===
+   7243  None
+   1410  race-others
+   1291  others-feminist
+   1133  gender-LGBTQ+
+    951  politics-progressive
+    932  gender-female
+    907  religion-islam
+    899  others-others
+    590  politics-others
+    500  gender-male
+    461  religion-christian
+    390  race-chinese
+    374  race-korean_chinese
+    272  politics-conservative
+    146  race-black
+    143  race-indian
+     85  gender-others
+     75  race-white
+     75  religion-others
+     64  others-socioeconomic_status
+     60  race-southeast_asian
+     56  others-age
+     47  religion-catholic
+     29  race-asian
+     22  others-disability
+     13  religion-buddhism
+      7  others-disease
+      2  others-physical_appearance
+
+=== GRP_clean (상위 40) ===
+   7243  None
+   3059  others
+   1291  feminist
+   1133  LGBTQ+
+    951  progressive
+    932  female
+    907  islam
+    500  male
+    461  christian
+    390  chinese
+    374  korean_chinese
+    272  conservative
+    146  black
+    143  indian
+     75  white
+     64  socioeconomic_status
+     60  southeast_asian
+     56  age
+     47  catholic
+     29  asian
+     22  disability
+     13  buddhism
+      7  disease
+      2  physical_appearance
+
+=== 'muslim/islam/이슬람/religion' 포함 GRP ===
+    907  religion-islam
+    461  religion-christian
+     75  religion-others
+     47  religion-catholic
+     13  religion-buddhism

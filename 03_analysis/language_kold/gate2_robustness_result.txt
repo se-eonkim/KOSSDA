@@ -1,0 +1,65 @@
+=================================================================
+  Gate 2: male-nationality 클러스터 강건성 검증
+  네트워크: 20개 노드, 59개 엣지
+  멀티표적 댓글: 278개
+=================================================================
+
+[기준선] greedy_modularity_communities (원 알고리즘)
+  Cluster 3 (male 소속): ['chinese', 'indian', 'korean_chinese', 'male', 'southeast_asian']
+  modularity Q = 0.2248
+  클러스터 수 = 4
+  male 클러스터 내 nationality 노드: ['chinese', 'indian', 'korean_chinese', 'southeast_asian'] (4개)
+
+[① Louvain 교차검증 N=200]
+  male-nationality 동거율 (≥2개): 200/200 = 100.0%
+  평균 nationality 공존 노드 수: 3.00
+  분포: [(3, 200)]
+
+[② resolution 스윕 (greedy_modularity, 0.5~2.0, step 0.1)]
+    res   클러스터수   nat겹침  male 클러스터 내 nationality 노드
+    0.5       2       6  ['asian', 'chinese', 'indian', 'korean_chinese', 'southeast_asian', 'white']
+    0.6       2       6  ['asian', 'chinese', 'indian', 'korean_chinese', 'southeast_asian', 'white']
+    0.7       2       6  ['asian', 'chinese', 'indian', 'korean_chinese', 'southeast_asian', 'white']
+    0.8       2       6  ['asian', 'chinese', 'indian', 'korean_chinese', 'southeast_asian', 'white']
+    0.9       4       6  ['asian', 'chinese', 'indian', 'korean_chinese', 'southeast_asian', 'white']
+    1.0       4       4  ['chinese', 'indian', 'korean_chinese', 'southeast_asian']
+    1.1       5       1  ['white']
+    1.2       6       1  ['white']
+    1.3       7       1  ['white']
+    1.4       7       1  ['white']
+    1.5       7       1  ['white']
+    1.6       7       1  ['white']
+    1.7       8       1  ['white']
+    1.8       8       1  ['white']
+    1.9       8       1  ['white']
+    2.0       8       1  ['white']
+
+  nationality ≥2 구간: 6/16 = 38%
+
+[③ 엣지 부트스트랩 N=200, 80% 샘플링]
+  male-nationality 동거율 (≥2개): 140/200 = 70.0%
+  평균 nationality 공존 노드 수: 2.29
+  분포: [(0, 20), (1, 40), (2, 59), (3, 32), (4, 42), (5, 6), (6, 1)]
+
+[male BC 재확인 (distance=1/weight)]
+  순위    노드                          BC
+  1     female                0.5673
+  2     feminist              0.4035
+  3     progressive           0.3158
+  4     islam                 0.1988
+  5     others                0.1988
+  6     christian             0.1053
+  7     chinese               0.0760
+  8     korean_chinese        0.0292
+  9     male                  0.0000 ← MALE
+  10    homosexual            0.0000
+
+=================================================================
+  종합 합의율 요약
+=================================================================
+  ① Louvain 200회:     100.0%
+  ② resolution 스윕:   38%
+  ③ 엣지 부트스트랩:   70.0%
+
+  평균 합의율: 69.2%
+  판정: 부분 안정 → 주의 요함, 슬라이드에서 강도 낮춰 서술

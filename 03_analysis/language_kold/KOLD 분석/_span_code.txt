@@ -1,0 +1,761 @@
+Traceback (most recent call last):
+  File "<string>", line 9, in <module>
+    print(src)
+    ~~~~~^^^^^
+UnicodeEncodeError: 'cp949' codec can't encode character '\ufe0f' in position 294: illegal multibyte sequence
+### CODE CELL 0 ###
+import json
+import pandas as pd
+
+# ÆÄÀÏ °æ·Î
+path = r"C:\Users\82109\OneDrive\¹ÙÅÁ È­¸é\LexicoGraphy and GenAI\Lex_Project\Taboo-Language\kold_v1.json"
+
+
+with open(path, "r", encoding="utf-8") as f:
+    data = json.load(f)
+
+### CODE CELL 1 ###
+df = pd.DataFrame(data)
+
+### CODE CELL 2 ###
+df.shape
+
+### CODE CELL 3 ###
+df['OFF_span'] = df['OFF_span'].str.strip()
+df['OFF_span'] = df['OFF_span'].replace('', None)
+
+### CODE CELL 4 ###
+df['TGT_span'] = df['TGT_span'].str.strip()
+df['TGT_span'] = df['TGT_span'].replace('', None)
+
+### CODE CELL 5 ###
+df_off = df[df['OFF_span'].notna()]
+
+### CODE CELL 6 ###
+df_span = df[df['OFF'] == True].copy()
+
+df_span['OFF_span'] = df_span['OFF_span'].str.strip()
+df_span = df_span[df_span['OFF_span'] != ""]
+
+### CODE CELL 7 ###
+# Tokenization with regex
+import re
+from collections import Counter
+
+off_series = df['OFF_span'].dropna().astype(str)
+
+tokens = []
+for span in off_series:
+    span = span.strip()
+    if not span:
+        continue
+    
+    # °ø¹é ±âÁØ ºÐ¸®
+    for tok in span.split():
+        # ÇÑ±Û/¿µ¹®/¼ýÀÚ¸¸ ³²±â±â
+        tok = re.sub(r"[^0-9A-Za-z°¡-ÆR]", "", tok)
+        if tok:
+            tokens.append(tok)
+
+counter = Counter(tokens)
+counter.most_common(100)
+
+### CODE CELL 8 ###
+# 1. OFF_span phrase »óÀ§ 30°³
+from collections import Counter
+
+off_phrases = (
+    df['OFF_span']
+    .dropna()
+    .astype(str)
+    .str.strip()
+)
+off_phrases = off_phrases[off_phrases != ""]
+print(Counter(off_phrases).most_common(30))
+
+
+### CODE CELL 9 ###
+import re
+from collections import Counter
+
+stopwords = {
+    '¿Ö','´Ù','ÁøÂ¥','±×³É','Á»','ÇÏ´Â','¹«½¼','´õ','ÀÌ','Âü','±×','ÇÏ°í','ÀÌ·±','¶Ç',
+    '¾ø´Â','°°Àº','¹º','³Ê¹«','¾È','Á¤¸»','ÀÌ°Ô','±×·¸°Ô','¾ø´Ù','Á¦¹ß','¹¹','Àú·±',
+    '¸»°í','Àý´ë','´©°¡','¾î¶»°Ô','ÇÒ','ÇÏÁö','¾ó¸¶³ª','Àú','¸¹ÀÌ','ÇÑ´Ù','ÀÖ´Â','¸ø',
+    '¼ö','°Í','Àß','ÇÑ','¾ÆÁÖ','Á¦´ë·Î','ÀÌÁ¦','ÇÏ¸é','»ç¶÷','¸»','°Å','¾Æ´Ô','¹»',
+    '¾Æ´Ï¶ó','±×·³','±×°Ô','°Á','»ç¶÷µé','¾ø°í','¾Æ´Ñ°¡','¼Ò¸®','¾Æ´Ï°í','¾Æ','±â»ç',
+    '¾ÈµÈ´Ù','¹«Á¶°Ç','ÀÚ±â','°¡¼­','ÀÌ·¸°Ô','ÇÏ³×','Áö±Ý','º¸°í','°Ô','±×¸¸','¾Ë°í'
+}
+
+def get_top_tokens(series, topn=30):
+    tokens = []
+    for span in series.dropna().astype(str):
+        for tok in span.split():
+            tok = re.sub(r"[^0-9A-Za-z°¡-ÆR]", "", tok)
+            if tok and tok not in stopwords and len(tok) > 1:
+                tokens.append(tok)
+    return Counter(tokens).most_common(topn)
+
+# ÀüÃ¼ OFF_span
+get_top_tokens(df['OFF_span'], topn=50)
+
+### CODE CELL 10 ###
+# feminist
+import re
+from collections import Counter
+
+sub = df[df['GRP'].astype(str).str.contains('feminist', case=False, na=False)]
+
+tokens = []
+for span in sub['OFF_span'].dropna().astype(str):
+    for tok in span.split():
+        tok = re.sub(r"[^0-9A-Za-z°¡-ÆR]", "", tok)
+        if tok and tok not in stopwords and len(tok) > 1:
+            tokens.append(tok)
+
+Counter(tokens).most_common(30)
+
+### CODE CELL 11 ###
+sub.loc[sub['OFF_span'].notna(), ['title', 'comment', 'OFF_span', 'TGT_span', 'GRP']].sample(20, random_state=42)
+
+### CODE CELL 12 ###
+import re
+from collections import Counter, defaultdict
+
+stopwords = {
+'¿Ö','´Ù','ÁøÂ¥','±×³É','Á»','ÇÏ´Â','¹«½¼','´õ','ÀÌ','Âü','±×','ÇÏ°í','ÀÌ·±','¶Ç',
+'¾ø´Â','°°Àº','¹º','³Ê¹«','¾È','Á¤¸»','ÀÌ°Ô','±×·¸°Ô','¾ø´Ù','Á¦¹ß','¹¹','Àú·±',
+'¸»°í','Àý´ë','´©°¡','¾î¶»°Ô','ÇÒ','ÇÏÁö','¾ó¸¶³ª','Àú','¸¹ÀÌ','ÇÑ´Ù','ÀÖ´Â','¸ø',
+'¼ö','°Í','Àß','ÇÑ','¾ÆÁÖ','Á¦´ë·Î','ÀÌÁ¦','ÇÏ¸é','»ç¶÷','¸»','°Å','¾Æ´Ô','¹»',
+'¾Æ´Ï¶ó','±×·³','±×°Ô','°Á','»ç¶÷µé','¾ø°í','¾Æ´Ñ°¡','¼Ò¸®','¾Æ´Ï°í','¾Æ','±â»ç',
+'¾ÈµÈ´Ù','¹«Á¶°Ç','ÀÚ±â','°¡¼­','ÀÌ·¸°Ô','ÇÏ³×','Áö±Ý','º¸°í','°Ô','±×¸¸','¾Ë°í'
+}
+
+grp_tokens = defaultdict(list)
+
+for _, row in df.iterrows():
+
+    grp = row['GRP']
+    span = row['OFF_span']
+
+    if pd.isna(grp) or pd.isna(span):
+        continue
+
+    for tok in str(span).split():
+        tok = re.sub(r"[^0-9A-Za-z°¡-ÆR]", "", tok)
+
+        if tok and tok not in stopwords and len(tok) > 1:
+            grp_tokens[grp].append(tok)
+
+grp_token_counts = {
+    g: Counter(toks).most_common(20)
+    for g, toks in grp_tokens.items()
+}
+
+grp_token_counts
+
+### CODE CELL 14 ###
+import re
+from collections import Counter
+
+templates = []
+
+for span in df['OFF_span'].dropna():
+
+    text = str(span)
+
+    # Æä¹Ì -> TARGET Ä¡È¯
+    text = re.sub(r'Æä¹Ì\w*', 'TARGET', text)
+
+    templates.append(text)
+
+Counter(templates).most_common(30)
+
+### CODE CELL 15 ###
+# GRP º°·Î OFF_span ºÐ¼®
+import re
+from collections import Counter
+import pandas as pd
+
+grp_vocab = {}
+
+for grp, sub in single_df.groupby("GRP_clean"):
+
+    tokens = []
+
+    for span in sub['OFF_span'].dropna():
+
+        for tok in str(span).split():
+
+            tok = re.sub(r"[^0-9A-Za-z°¡-ÆR]", "", tok)
+
+            if len(tok) > 1:
+                tokens.append(tok)
+
+    grp_vocab[grp] = Counter(tokens).most_common(10)
+
+grp_vocab
+
+### CODE CELL 17 ###
+# º¸¿ÏÁ¡ »õ·Î Ãß°¡
+import re
+from collections import Counter
+import pandas as pd
+
+# 1) ºÒ¿ë¾î: °á°ú º¸°í °è¼Ó Ãß°¡/¼öÁ¤ÇØµµ µÊ
+stopwords = {
+    "±×³É", "ÁøÂ¥", "³Ê¹«", "Á¤¸»", "¾ÆÁÖ", "¹«½¼", "ÀÌ·±", "Àú·±",
+    "ÇÏ°í", "ÇÏ´Â", "ÇÏ´Ù", "ÇØ¼­", "ÇÏ¸é", "ÇÏ¸ç", "ÇÑµ¥", "°°Àº",
+    "¾ø´Â", "ÀÖ´Â", "ÀÖ´Ù", "¾ø´Ù", "µµ´ëÃ¼", "Á¦¹ß", "ÀÌÁ¦", "¶Ç",
+    "Á»", "¿Ö", "¹¹", "¹º", "¹»", "°Å", "°Í", "¼ö", "´õ", "Àß", "¾È",
+    "³ª¶ó", "»ç¶÷", "»ç¶÷µé", "¾Öµé", "¾ÖµéÀÌ", "´Ïµé", "Áöµé", "À÷µé",
+    "¿ì¸®", "³ÊÈñ", "°Âµé", "±×µé", "±×³É", "ÀÌ³ª", "ÀÌ´Ù", "¾Æ´Ï´Ù"
+}
+
+# 2) Á¶»ç/¾î¹Ì ´Ü¼ø Á¤±ÔÈ­¿ë suffix
+#   ¿Ïº®ÇÑ Ç¥Á¦¾îÈ­´Â ¾Æ´Ï°í, EDA¿ë heuristic
+suffixes = [
+    "À¸·Î´Â", "À¸·Îµµ", "À¸·Î¸¸", "À¸·Î", "¿¡¼­", "¿¡°Ô", "ÇÑÅ×", "Ã³·³",
+    "±îÁö", "ºÎÅÍ", "¶óµµ", "¸¶Àú", "Á¶Â÷", "¹Û¿¡", "¸¸Å­", "º¸´Ù",
+    "ÀÌ´Ù", "ÀÔ´Ï´Ù", "¿´´Ù", "¿´´Ù°¡", "ÀÌ´Ù", "ÀÎ", "ÀÎµ¥",
+    "Àº", "´Â", "ÀÌ", "°¡", "À»", "¸¦", "¿¡", "ÀÇ", "¿Í", "°ú", "µµ", "¸¸"
+]
+
+def normalize_token(tok: str) -> str:
+    tok = str(tok).strip()
+    tok = re.sub(r"[^0-9A-Za-z°¡-ÆR]", "", tok)
+
+    if len(tok) <= 1:
+        return ""
+
+    # Á¶»ç/¾î¹Ì Á¦°Å (±ä suffixºÎÅÍ ¸ÕÀú)
+    for suf in sorted(suffixes, key=len, reverse=True):
+        if tok.endswith(suf) and len(tok) > len(suf) + 1:
+            tok = tok[:-len(suf)]
+            break
+
+    return tok
+
+def span_to_tokens(span: str):
+    # °ø¹é ±âÁØ 1Â÷ ºÐ¸®
+    raw_tokens = str(span).split()
+    tokens = []
+
+    for tok in raw_tokens:
+        norm = normalize_token(tok)
+        if not norm:
+            continue
+        if norm in stopwords:
+            continue
+        if len(norm) <= 1:
+            continue
+        tokens.append(norm)
+
+    return tokens
+
+grp_vocab = {}
+
+for grp, sub in single_df.groupby("GRP_clean"):
+    tokens = []
+
+    # ÇØ´ç group¿¡¼­ ÀÚÁÖ targetÀ¸·Î µîÀåÇÏ´Â Ç¥Çö(TGT_span)À» ¸ð¾Æ¼­ Á¦°Å
+    tgt_tokens = set()
+    for tgt in sub["TGT_span"].dropna():
+        tgt_tokens.update(span_to_tokens(tgt))
+
+    for span in sub["OFF_span"].dropna():
+        span_tokens = span_to_tokens(span)
+
+        for tok in span_tokens:
+            # target reference Á¦°Å
+            if tok in tgt_tokens:
+                continue
+            tokens.append(tok)
+
+    grp_vocab[grp] = Counter(tokens).most_common(15)
+
+grp_vocab
+
+
+### CODE CELL 21 ###
+# seed mapping (°³³ä ºÐ·ù Å×ÀÌºí)
+
+# =========================
+# 1. seed concept mapping
+# =========================
+
+concept_map = {
+    # -------- pathology / mental illness --------
+    "Á¤½Åº´": "pathology",
+    "Á¤½Åº´ÀÌ´Ù": "pathology",
+    "Á¤½Åº´ÀÚ": "pathology",
+    "¹ÌÄ£": "pathology",
+    "¹ÌÃÆ³×": "pathology",
+    "Á¤½Å": "pathology",
+    "´ä¾ø´Ù": "pathology",
+
+    # -------- disease / contamination --------
+    "¿¡ÀÌÁî": "disease_frame",
+    "ÀÎ±ÇÅ¸·É¿¡ÀÌÁî": "disease_frame",
+    "ÄÚ·Î³ª": "disease_frame",
+
+    # -------- disgust / contempt --------
+    "¿ª°ã´Ù": "disgust",
+    "¿ª°Ü¿î": "disgust",
+    "±ØÇø": "disgust",
+    "ÃßÇÏ´Ù": "disgust",
+    "²¿¶óÁö": "disgust",
+    "²¿¶óÁöÇÏ°í´Â": "disgust",
+    "¤¹¤¹¤¹": "disgust",
+    "¿ô±â³×": "disgust",
+    "ÇÑ½ÉÇÏ´Ù": "disgust",
+    "¹«½Ä": "disgust",
+    "¹«½ÄÇÑ": "disgust",
+
+    # -------- generic insult / dehumanization --------
+    "¾²·¹±â": "generic_insult",
+    "±â»ýÃæ": "dehumanization",
+    "»çÈ¸¾ÇÀÌ´Ù": "dehumanization",
+    "»ç±â²Û": "generic_insult",
+    "¼ºÃßÇà¹ü": "criminalization",
+    "°³¼Ò¸®": "generic_insult",
+    "²¨Á®": "exclusion",
+    "ÇØÃ¼ÇÏ¶ó": "exclusion",
+    "ÆóÁö°¡": "exclusion",
+    "ÆóÁö°¡´äÀÌ´Ù": "exclusion",
+    "ÆóÁö°¡´äÀÌ´Ù": "exclusion",
+    "Â÷º°¹Þ¾Æ": "exclusion",
+    "Â÷º°¹Þ¾Æ¸¶¶¥ÇÏ´Ù": "exclusion",
+
+    # -------- gender / feminist slur --------
+    "Æä¹Ì": "gender_slur",
+    "Æä¹Ì°¡": "gender_slur",
+    "Æä¹Ìµé": "gender_slur",
+    "Æä¹Ì´Â": "gender_slur",
+    "Æä¹ÌµéÀÌ": "gender_slur",
+    "Æä¹Ì¸¦": "gender_slur",
+    "Æä¹Ìµé¾Æ": "gender_slur",
+    "Æä¹ÌµéÀº": "gender_slur",
+    "Æä¹Ì´ÏÁò": "gender_ideology",
+    "Æä¹Ì´ÏÁòÀº": "gender_ideology",
+    "Æä¹Ì´Ï½ºÆ®": "gender_ideology",
+    "¸Þ°¥": "gender_slur",
+    "²ÃÆä¹Ì": "gender_slur",
+    "³²Çø": "gender_conflict",
+    "Á¨´õ": "gender_ideology",
+    "ÇÑ³²": "gender_slur",
+    "ÇÑ³²µé": "gender_slur",
+
+    # -------- sexuality --------
+    "µ¿¼º¾Ö": "sexuality_frame",
+    "µ¿¼º¾Ö´Â": "sexuality_frame",
+    "µ¿¼º¾Ö¸¦": "sexuality_frame",
+    "µ¿¼º¾Ö°¡": "sexuality_frame",
+
+    # -------- religion / religious slur --------
+    "ÀÌ½½¶÷": "religion_identity",
+    "ÀÌ½½¶÷Àº": "religion_identity",
+    "Á¾±³": "religion_identity",
+    "°³µ¶": "religious_slur",
+    "°³µ¶±³": "religious_slur",
+    "°³½Å±³": "religion_identity",
+    "±³È¸": "religion_identity",
+    "¸ñ»ç°¡": "religion_identity",
+    "ÇÏ³ª´ÔÀÌ": "religion_identity",
+    "»çÅºÀÇ": "religious_demonization",
+    "¸¶±Í": "religious_demonization",
+    "¸¶±ÍÀÇ": "religious_demonization",
+    "ºÎÃ³¿¡": "religion_identity",
+
+    # -------- terrorism / security --------
+    "Å×·¯": "terrorism_frame",
+    "´Þ·¹¹Ý": "terrorism_frame",
+
+    # -------- ethnicity / race / nationality --------
+    "Â¯±ú": "ethnic_slur",
+    "Á¶¼±Á·": "ethnic_slur",
+    "Á¶¼±Á·Àº": "ethnic_slur",
+    "Áß±¹": "nationality_identity",
+    "Áß±¹ÀÌ": "nationality_identity",
+    "Áß±¹ÀÎ": "nationality_identity",
+    "Áß±¹À¸·Î": "outsider_frame",
+    "µ¿Æ÷": "ethnic_identity",
+    "µ¿Æ÷¶ó°í": "ethnic_identity",
+    "µ¿Æ÷´Â": "ethnic_identity",
+    "ÈæÀÎ": "race_identity",
+    "ÈæÀÎÀÌ": "race_identity",
+    "ÈæÀÎµé": "race_identity",
+    "µ¿¾çÀÎ": "race_identity",
+    "ÀÎÁ¾Â÷º°": "race_discourse",
+    "ÀÎµµ´Â": "nationality_identity",
+    "ÀÎµµ°¡": "nationality_identity",
+    "º£Æ®³²": "nationality_identity",
+    "µ¶µµ¸¦": "national_conflict",
+
+    # -------- politics --------
+    "¹®Àç¾Ó": "political_slur",
+    "»¡°»ÀÌ": "political_slur",
+    "»¡°»ÀÌµé": "political_slur",
+    "´ë±ú¹®": "political_slur",
+    "¹ÎÁÖ´ç": "political_identity",
+    "ÁÂÆÄ": "political_label",
+    "´õºÒ¾î": "political_identity",
+    "Á¤±Ç": "political_identity",
+    "±¹Áü´ç": "political_slur",
+    "±¹Áü": "political_slur",
+    "±¹¹ÎÀÇ": "political_identity",
+    "ÈÄº¸": "political_identity",
+    "¾Ç¹ý": "political_label",
+    "±â·¹±â": "media_slur",
+
+    # -------- migration / nation --------
+    "³­¹Î": "immigration_frame",
+    "³ª¶ó": "national_frame",
+    "³ª¶ó¸¦": "national_frame",
+    "³ª¶ó°¡": "national_frame",
+    "³ª¶ó·Î": "national_frame",
+    "ÇÑ±¹": "national_frame",
+    "±Ùº»µµ¾ø´ÂÇÑ±¹": "national_frame",
+    "±Ùº»µµ¾ø´ÂÇÑ±¹TARGET": "national_frame",
+
+    # -------- gender-role discourse --------
+    "¿©ÀÚ°¡": "gender_role",
+    "¿©¼º": "gender_role",
+    "¿©ÀÚ": "gender_role",
+    "¿©ÀÚ´Â": "gender_role",
+    "³²ÀÚ°¡": "gender_role",
+    "³²ÀÚ": "gender_role",
+    "³²ÀÚµé": "gender_role",
+    "±º´ë": "gender_role",
+
+    # -------- age / appearance / class --------
+    "ÀþÀº": "age_discourse",
+    "¶ó¶¼µéÀÌ": "age_discourse",
+    "À¯¸®ÃµÀåÀÌ": "gender_role",
+    "´ë¸Ó¸®³×": "appearance_attack",
+    "´ë¸Ó¸®¿©": "appearance_attack",
+    "½âÀº": "class_contempt",
+    "½â¾îºüÁø": "class_contempt",
+}
+
+### CODE CELL 22 ###
+# ÅäÅ« Á¤±ÔÈ­ ÇÔ¼ö
+import re
+
+def normalize_token(tok: str) -> str:
+    tok = str(tok).strip()
+    tok = re.sub(r"[^0-9A-Za-z°¡-ÆR]", "", tok)
+
+    # ÀÚÁÖ ³ª¿À´Â Á¶»ç/¾î¹Ì ¾ÆÁÖ ´Ü¼ø Á¦°Å
+    suffixes = [
+        "µéÀº", "µéÀÌ", "µé¾Æ", "µéÀº", "µéÀº", "µéÀº",
+        "Àº", "´Â", "ÀÌ", "°¡", "À»", "¸¦", "¿Í", "°ú",
+        "À¸·Î", "·Î", "¿¡¼­", "¿¡°Ô", "¸¸", "µµ", "¾ß"
+    ]
+    for s in sorted(suffixes, key=len, reverse=True):
+        if tok.endswith(s) and len(tok) > len(s) + 1:
+            tok = tok[:-len(s)]
+            break
+
+    return tok
+
+### CODE CELL 23 ###
+from collections import Counter, defaultdict
+import pandas as pd
+
+grp_concept_counts = {}
+unmapped_tokens = defaultdict(list)
+
+for grp, word_list in grp_vocab.items():
+    concept_counter = Counter()
+
+    for word, cnt in word_list:
+        norm = normalize_token(word)
+
+        # 1Â÷: ¿øÇüÀ¸·Î ¸ÅÇÎ
+        if word in concept_map:
+            concept = concept_map[word]
+
+        # 2Â÷: normalizeµÈ ÅäÅ«À¸·Î ¸ÅÇÎ
+        elif norm in concept_map:
+            concept = concept_map[norm]
+
+        # 3Â÷: ±ÔÄ¢ ±â¹Ý fallback
+        elif "Æä¹Ì" in norm:
+            concept = "gender_slur"
+        elif "µ¿¼º¾Ö" in norm:
+            concept = "sexuality_frame"
+        elif "ÀÌ½½¶÷" in norm:
+            concept = "religion_identity"
+        elif "Áß±¹" in norm:
+            concept = "nationality_identity"
+        elif "Á¶¼±Á·" in norm:
+            concept = "ethnic_slur"
+        elif "ÈæÀÎ" in norm:
+            concept = "race_identity"
+        elif "¹ÎÁÖ´ç" in norm or "ÁÂÆÄ" in norm:
+            concept = "political_label"
+        elif "±¹Áü" in norm or "±¹¹ÎÀÇ" in norm:
+            concept = "political_label"
+        elif "°³µ¶" in norm:
+            concept = "religious_slur"
+        elif "Á¤½Åº´" in norm or "¹ÌÄ£" in norm:
+            concept = "pathology"
+        elif "Å×·¯" in norm:
+            concept = "terrorism_frame"
+        elif "¿¡ÀÌÁî" in norm:
+            concept = "disease_frame"
+        elif "³­¹Î" in norm:
+            concept = "immigration_frame"
+        elif "¿©ÀÚ" in norm or "¿©¼º" in norm or "³²ÀÚ" in norm or "±º´ë" in norm:
+            concept = "gender_role"
+        else:
+            concept = "other_or_generic"
+            unmapped_tokens[grp].append((word, cnt))
+
+        concept_counter[concept] += cnt
+
+    grp_concept_counts[grp] = concept_counter
+
+# Ç¥ ÇüÅÂ·Î º¸±â
+concept_df = pd.DataFrame(grp_concept_counts).fillna(0).astype(int).T
+concept_df
+
+### CODE CELL 24 ###
+top_concepts_by_group = {
+    grp: counter.most_common(5)
+    for grp, counter in grp_concept_counts.items()
+}
+
+top_concepts_by_group
+
+### CODE CELL 26 ###
+# ¹ÌºÐ·ù ÅäÅ« È®ÀÎÇÏ±â
+rows = []
+for grp, items in unmapped_tokens.items():
+    for word, cnt in items:
+        rows.append([grp, word, cnt])
+
+unmapped_df = pd.DataFrame(rows, columns=["group", "token", "count"])
+unmapped_df.sort_values(["group", "count"], ascending=[True, False]).head(300)
+
+### CODE CELL 28 ###
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+plt.figure(figsize=(14, 8))
+
+sns.heatmap(
+    concept_df,
+    cmap="Reds",
+    annot=True,
+    fmt="d"
+)
+
+plt.title("Target Group ¡¿ Attack Concept")
+plt.xlabel("Attack Concept")
+plt.ylabel("Target Group")
+plt.tight_layout()
+plt.show()
+
+### CODE CELL 29 ###
+plot_df = concept_df.copy()
+
+if 'other_or_generic' in plot_df.columns:
+    plot_df = plot_df.drop(columns=['other_or_generic'])
+
+row_norm_df = plot_df.div(plot_df.sum(axis=1), axis=0).fillna(0)
+
+plt.figure(figsize=(14, 8))
+
+sns.heatmap(
+    row_norm_df,
+    cmap="Reds",
+    annot=True,
+    fmt=".2f"
+)
+
+plt.title("Normalized Target Group ¡¿ Attack Concept")
+plt.xlabel("Attack Concept")
+plt.ylabel("Target Group")
+plt.tight_layout()
+plt.show()
+
+### CODE CELL 30 ###
+# 3½Ã 46ºÐ concept ¼öÁ¤ÇÑ ¹öÀü
+
+new_concept_map = {
+    # -------------------------
+    # 1) pathology
+    # -------------------------
+    "Á¤½Åº´": "pathology",
+    "Á¤½Åº´ÀÌ´Ù": "pathology",
+    "Á¤½Åº´ÀÚ": "pathology",
+    "Á¤½Åº´ÀÚµé": "pathology",
+    "¹ÌÄ£": "pathology",
+    "¹ÌÃÆ³×": "pathology",
+    "Á¤½Å": "pathology",
+    "Á¤½Å³ª°£": "pathology",
+    "´ä¾ø´Ù": "pathology",
+
+    # -------------------------
+    # 2) disease
+    # -------------------------
+    "¿¡ÀÌÁî": "disease",
+    "ÀÎ±ÇÅ¸·É¿¡ÀÌÁî": "disease",
+    "ÄÚ·Î³ª": "disease",
+
+    # -------------------------
+    # 3) terrorism
+    # -------------------------
+    "Å×·¯": "terrorism",
+    "Å»·¹¹Ý": "terrorism",
+    "´Þ·¹¹Ý": "terrorism",  # È¤½Ã ¿ÀÅ¸/º¯Çü Æ÷ÇÔ
+
+    # -------------------------
+    # 4) disgust
+    # -------------------------
+    "¿ª°ã´Ù": "disgust",
+    "¿ª°Ü¿î": "disgust",
+    "±ØÇø": "disgust",
+    "ÃßÇÏ´Ù": "disgust",
+    "²¿¶óÁö": "disgust",
+    "²¿¶óÁöÇÏ°í´Â": "disgust",
+    "¤¹¤¹¤¹": "disgust",
+    "¿ô±â³×": "disgust",
+    "ÇÑ½ÉÇÏ´Ù": "disgust",
+    "ÇÑ½É": "disgust",
+    "¹«½Ä": "disgust",
+    "¹«½ÄÇÑ": "disgust",
+
+    # -------------------------
+    # 5) dehumanization
+    # -------------------------
+    "±â»ýÃæ": "dehumanization",
+    "»çÈ¸¾Ç": "dehumanization",
+    "»çÈ¸¾ÇÀÌ´Ù": "dehumanization",
+    "¹ú·¹": "dehumanization",
+    "¾²·¹±âµé": "dehumanization",
+
+    # -------------------------
+    # 6) criminalization
+    # -------------------------
+    "»ç±â²Û": "criminalization",
+    "¼ºÃßÇà¹ü": "criminalization",
+    "¹üÁËÀÚ": "criminalization",
+    "¹üÁË": "criminalization",
+
+    # -------------------------
+    # 7) outsider
+    # -------------------------
+    "²¨Á®": "outsider",
+    "°¡¶ó": "outsider",
+    "³ª¶ó·Î": "outsider",
+    "Áß±¹À¸·Î": "outsider",
+    "ÇÑ±¹À¸·Î": "outsider",
+    "±¹Àû": "outsider",
+    "³­¹Î": "outsider",
+    "µ¿Æ÷¶ó°í": "outsider",   # ¹®¸Æ»ó ¹èÁ¦/ºÎÁ¤ ¸Æ¶ô¿¡¼­ ÀÚÁÖ ¾²ÀÌ¸é À¯Áö
+    "µ¿Æ÷¶ó": "outsider",
+    "´ëÇÑ¹Î±¹": "outsider",   # ¹èÁ¦/±Í¼Ó ³íÀï ¸Æ¶ô¿¡¼­¸¸ ÀÇ¹Ì ÀÖÀ½
+    "ÇÑ±¹": "outsider",       # ³Ê¹« ³Ð¾î¼­ ³ªÁß¿¡ ¹®¸Æ º¸°í Á¦°Å °¡´É
+    "³ª¶ó": "outsider",       # ÀÌ°Íµµ °úÆ÷°ý °¡´É
+    "³ª¶ó¸¦": "outsider",
+    "³ª¶ó°¡": "outsider",
+
+    # -------------------------
+    # 8) role_stereotype
+    # -------------------------
+    "±º´ë": "role_stereotype",
+    "¿©ÀÚ": "role_stereotype",
+    "¿©ÀÚ´Â": "role_stereotype",
+    "¿©ÀÚ°¡": "role_stereotype",
+    "¿©¼º": "role_stereotype",
+    "³²ÀÚ": "role_stereotype",
+    "³²ÀÚ°¡": "role_stereotype",
+    "³²ÀÚµé": "role_stereotype",
+    "À¯¸®ÃµÀå": "role_stereotype",
+    "À¯¸®ÃµÀåÀÌ": "role_stereotype",
+
+    # -------------------------
+    # 9) ideological_label
+    # -------------------------
+    "ÁÂÆÄ": "ideological_label",
+    "¹ÎÁÖ´ç": "ideological_label",
+    "´õºÒ¾î": "ideological_label",
+    "Á¤±Ç": "ideological_label",
+    "±¹Áü´ç": "ideological_label",
+    "±¹Áü": "ideological_label",
+    "±¹¹ÎÀÇ": "ideological_label",
+    "ÈÄº¸": "ideological_label",
+    "¹®Àç¾Ó": "ideological_label",
+    "»¡°»ÀÌ": "ideological_label",
+    "»¡°»ÀÌµé": "ideological_label",
+    "´ë±ú¹®": "ideological_label",
+    "¾Ç¹ý": "ideological_label",
+    "±â·¹±â": "ideological_label",
+    "³²Çø": "ideological_label",
+    "Æä¹Ì´ÏÁò": "ideological_label",
+    "Æä¹Ì´ÏÁòÀº": "ideological_label",
+    "Æä¹Ì´Ï½ºÆ®": "ideological_label",
+    "Á¨´õ": "ideological_label",
+
+    # -------------------------
+    # 10) generic_insult
+    # -------------------------
+    "¾²·¹±â": "generic_insult",
+    "°³¼Ò¸®": "generic_insult",
+    "Æä¹Ì": "generic_insult",
+    "Æä¹Ì°¡": "generic_insult",
+    "Æä¹Ìµé": "generic_insult",
+    "Æä¹Ì´Â": "generic_insult",
+    "Æä¹ÌµéÀÌ": "generic_insult",
+    "Æä¹Ì¸¦": "generic_insult",
+    "Æä¹Ìµé¾Æ": "generic_insult",
+    "Æä¹ÌµéÀº": "generic_insult",
+    "¸Þ°¥": "generic_insult",
+    "²ÃÆä¹Ì": "generic_insult",
+    "ÇÑ³²": "generic_insult",
+    "ÇÑ³²µé": "generic_insult",
+    "°³µ¶": "generic_insult",
+    "°³µ¶±³": "generic_insult",
+    "Â¯±ú": "generic_insult",
+    "Á¶¼±Á·": "generic_insult",
+    "Á¶¼±Á·Àº": "generic_insult",
+    "´ë¸Ó¸®³×": "generic_insult",
+    "´ë¸Ó¸®¿©": "generic_insult",
+    "½âÀº": "generic_insult",
+    "½â¾îºüÁø": "generic_insult",
+}
+
+### CODE CELL 31 ###
+identity_map = {
+    "feminist": "gender",
+    "female": "gender",
+    "male": "gender",
+    "LGBTQ+": "gender",   # ¾ö¹ÐÈ÷´Â sexuality/gender minorityÁö¸¸ ³× ÇöÀç taxonomy¿¡¼± gender Ãà¿¡ Æ÷ÇÔ °¡´É
+
+    "islam": "religion",
+    "christian": "religion",
+    "catholic": "religion",
+    "buddhism": "religion",
+
+    "black": "race_ethnicity",
+    "white": "race_ethnicity",
+    "asian": "race_ethnicity",
+
+    "chinese": "nationality",
+    "korean_chinese": "nationality",
+    "indian": "nationality",
+    "southeast_asian": "nationality",
+
+    "progressive": "politics",
+    "conservative": "politics",
+
+    "age": "age",
+    "socioeconomic_status": "class",
+    "disability": "disability",
+    "physical_appearance": "appearance",
+}
+
+### CODE CELL 32 ###
