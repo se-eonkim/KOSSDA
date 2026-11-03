@@ -59,7 +59,7 @@ KOLD 8개 표적 집단의 변별어를 [log-odds ratio + Dirichlet prior](https
 
 ## Research Trajectory
 
-이 프로젝트의 언어 축(KOLD 분석)은 튀빙겐 대학교(University of Tübingen)에서 진행한 한국어·이탈리아어·신할라어 비교 혐오표현 연구(cross-linguistic collaboration)에서 시작됐다 — [kold-hate-speech-analysis](https://github.com/se-eonkim/kold-hate-speech-analysis). 그 연구의 두 관찰(여성 = 매개 허브, 흑인 표적 = 수입된 프레임)을 이어받아 이 프로젝트에서 바뀐 부분:
+이 프로젝트의 언어 축(KOLD 분석)은 튀빙겐 대학교(University of Tübingen)에서 진행한 한국어·이탈리아어·신할라어 비교 혐오표현 연구(cross-linguistic collaboration)에서 시작됐다 — [kold-hate-speech-analysis](https://github.com/se-eonkim/kold-hate-speech-analysis). 그 연구의 두 관찰(여성 = 매개 허브, 흑인 표적 = 수입 프레임 가설)을 이어받아 이 프로젝트에서 바뀐 부분:
 
 - **방법론:** 정성적 concept taxonomy 프레임 코딩 → log-odds ratio(Monroe et al. 2008, Dirichlet prior) 기반 통계적 유의성 검정
 - **범위:** 언어 축 단일 분석 → 사회조사(KOSSDA) 기준선 + AI 모델(SC-WEAT/MLM) 층위를 더한 3층 구조
