@@ -20,7 +20,7 @@ Each step of the analysis had an explicit criterion and a scholarly basis for de
 
 ### Interpreting betweenness centrality
 - **Overreach:** converting a graph property, betweenness within this network, directly into "the structural axis of Korean society".
-- **Warranted:** limiting the claim to this network: female ranks first in betweenness and weighted degree, which places it between otherwise separate conflicts. This describes a structural position *within this dataset*, not social centrality. The rank depends on the distance definition. With unweighted paths, the residual `others` category ranks first (0.2018) and female second (0.1638), still first among named groups.
+- **Warranted:** limiting the claim to this network: female ranks first in betweenness and weighted degree, which places it between otherwise separate conflicts. This describes a structural position *within this dataset*, not social centrality. This rank is specific to the weighted definition (`distance = 1/weight`) and changes with unweighted paths.
 - **Basis:** Borgatti (2005), "Centrality and Network Flow," *Social Networks* 27.
 
 ### KOLD representativeness
@@ -32,7 +32,7 @@ Each step of the analysis had an explicit criterion and a scholarly basis for de
 - **Overreach:** concluding "the AI learned hate" from target–attribute cosine similarity alone.
 - **Warranted:** interpreting an association only after a permutation test of the unpleasant-versus-pleasant attribute contrast. The fill-mask probe separately uses neutral nouns as a control for template bias. [`m1_static_weat.py`](ai_model/m1_static_weat.py) also applies Benjamini-Hochberg correction through `scipy.stats.false_discovery_control`. The reported `d` is the observed score standardized against the permutation null. FDR correction covers the KLUE-RoBERTa analysis; in the fastText replication, Black was the only target with raw p<.05 (p=.0125).
 - **Basis:** Caliskan et al. (2017), *Science* 356(6334), on WEAT.
-- See [`ai_model/README.md`](ai_model/README.md) for the comparison that led to the static embedding analysis. I first ran the test on contextual KoSimCSE representations. All four pooling and centering configurations were non-significant (p>0.49), so I moved to static embeddings. I read this as sensitivity to representation and probe design, not as absence of the association.
+- See [`ai_model/README.md`](ai_model/README.md) for the comparison between representations. I ran the same test on contextual KoSimCSE representations and on static embeddings. All four contextual pooling and centering configurations were non-significant (p>0.49). I read this as sensitivity to representation and probe design, not as absence of the association.
 
 ## 2. A Self-Falsification Case: The "Imported Black Frame" Gate
 
@@ -63,5 +63,5 @@ The lesson: a plausible number cannot serve as evidence until the meaning of the
 | KOLD representativeness | Keyword-based collection from offense-prone contexts; non-probability sample | Interpretation limited to structure and patterns rather than frequency and rank |
 | Annotation reliability | Inter-annotator agreement of α = 0.55 in the original dataset | Only original labels used (target group, offensive span); no recoding |
 | Co-targeting network | Multi-target comments only, n=278 | Centrality interpreted "within this network" only |
-| Centrality definition | Female's first rank holds under `distance = 1/weight` and weighted degree, but not under unweighted betweenness | Distance definition stated with every BC value |
+| Centrality definition | BC rank is specific to `distance = 1/weight` | Distance definition stated with BC values |
 | WEAT / static embeddings | No sentence-level context; the permutation test addresses significance only, not causation | Described as "learned association", not as the model's "opinion" or direct proof of social reality |

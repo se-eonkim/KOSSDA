@@ -20,7 +20,7 @@
 
 ### Betweenness centrality 해석
 - **비약:** "네트워크 내 매개중심성"이라는 그래프 속성을 곧장 "한국 사회의 구조축"으로 치환
-- **타당:** "이 co-targeting network 안에서 여성이 betweenness·weighted degree 1위 → 서로 다른 갈등을 잇는 매개 위치"로 한정. 사회적 중심성이 아니라 *이 데이터셋 안에서의* 구조적 위치로 서술. 다만 이 순위는 거리 정의에 달려 있다. 비가중 경로에서는 잔여 범주 `others`가 1위(0.2018), 여성이 2위(0.1638)이며, 이름 있는 집단 중에서는 여전히 1위다
+- **타당:** "이 co-targeting network 안에서 여성이 betweenness·weighted degree 1위 → 서로 다른 갈등을 잇는 매개 위치"로 한정. 사회적 중심성이 아니라 *이 데이터셋 안에서의* 구조적 위치로 서술. 이 순위는 `distance = 1/weight` 기준이며, 비가중 경로에서는 달라진다
 - **근거:** Borgatti (2005), "Centrality and Network Flow," *Social Networks* 27
 
 ### KOLD 대표성
@@ -32,7 +32,7 @@
 - **비약:** target–attribute cosine similarity 단독으로 "AI가 혐오를 배웠다"고 단정
 - **타당:** 부정 대 긍정 attribute 대비를 permutation test로 유의성 검정한 뒤에만 해석. 빈칸 채우기(MLM)는 별도로 중립 명사를 대조군으로 사용해 template bias를 통제했다. [`m1_static_weat.py`](ai_model/m1_static_weat.py)는 `scipy.stats.false_discovery_control`로 다중비교 보정까지 적용. 보고한 `d`는 관측값을 순열 분포로 표준화한 값이다. FDR 보정은 KLUE-RoBERTa 분석에 적용했고, fastText 재현에서 원 p<.05인 표적은 흑인뿐이다(p=.0125)
 - **근거:** Caliskan et al. (2017), *Science* 356(6334) — WEAT
-- 정적/contextual 임베딩 중 정적을 채택하게 된 비교 과정은 [`ai_model/README.md`](ai_model/README.md) 참고. 처음에는 contextual KoSimCSE 표상에서 검정했으나 pooling·centering 4개 조건이 모두 비유의(p>0.49)여서 정적 임베딩으로 옮겼다. 이 결과는 연관의 부재가 아니라 표상과 probe 설계에 대한 민감성으로 해석한다
+- 정적/contextual 임베딩 비교는 [`ai_model/README.md`](ai_model/README.md) 참고. 같은 검정을 contextual KoSimCSE 표상과 정적 임베딩에 모두 적용했고, contextual의 pooling·centering 4개 조건은 모두 비유의(p>0.49)였다. 이 결과는 연관의 부재가 아니라 표상과 probe 설계에 대한 민감성으로 해석한다
 
 ## 2. 반증 사례: "black 수입 프레임" 게이트
 
@@ -52,7 +52,7 @@
 
 **두 번째 가설(기각):** "BLM 발생 시기(2020-05\~06)에 흑인 관련 댓글이 집중됐을 것이다."
 
-`date` 필드를 확인한 결과([`gate1_black_dates.py`](language_kold/gate1_black_dates.py) → [`gate1_dates_result.txt`](language_kold/gate1_dates_result.txt)), black(175개)뿐 아니라 islam(1,059개)·female(1,129개) 등 무관한 집단들도 전부 2020년 비중이 거의 없고(1.7%·0.7%·3.0%) 2021~2022년에 몰려 있었다. 즉 `date`는 댓글 작성 시점이 아니라 **크롤링/수집 시점**으로 추정되며, 시간축 근거로 쓸 수 없는 필드였다. 이 가설은 **폐기**하고, 시간축 대신 위 맥락 분석(86%/89%)만을 근거로 남겼다.
+`date` 필드를 확인한 결과([`gate1_black_dates.py`](language_kold/gate1_black_dates.py) → [`gate1_dates_result.txt`](language_kold/gate1_dates_result.txt)), black(175개)뿐 아니라 islam(1,059개)·female(1,129개) 등 무관한 집단들도 전부 2020년 비중이 거의 없고(1.7%·0.7%·3.0%) 2021–2022년에 몰려 있었다. 즉 `date`는 댓글 작성 시점이 아니라 **크롤링/수집 시점**으로 추정되며, 시간축 근거로 쓸 수 없는 필드였다. 이 가설은 **폐기**하고, 시간축 대신 위 맥락 분석(86%/89%)만을 근거로 남겼다.
 
 이 과정은 "그럴듯해 보이는 수치라도 필드의 실제 의미를 검증하지 않으면 근거로 쓸 수 없다"는 점을 보여준다 — `date` 필드의 의미에 대한 설명은 KOLD 원 논문에서 찾지 못했고, 직접 분포를 뜯어봐야 드러났다.
 
@@ -63,5 +63,5 @@
 | KOLD 대표성 | offense-prone keyword 기반 수집, 비확률 표본 | 빈도·순위 대신 구조·양식 중심 해석으로 제한 |
 | 주석 신뢰도 | 원 데이터셋 inter-annotator agreement α = 0.55 | 원 라벨(표적 집단·공격 스팬)만 사용, 자체 재코딩 없음 |
 | Co-targeting network | 다중표적 댓글만 사용, n=278 | centrality 해석을 "이 네트워크 내" 로 한정 |
-| 중심성 정의 | 여성 1위는 `distance = 1/weight`와 weighted degree에서 성립하고, 비가중 BC에서는 성립하지 않음 | BC 값에 거리 정의를 함께 명시 |
+| 중심성 정의 | BC 순위는 `distance = 1/weight` 기준 | BC 값에 거리 정의를 함께 명시 |
 | WEAT / 정적 임베딩 | 문장 수준 맥락 미반영, permutation test는 유의성만 검정 (인과 아님) | "학습된 연관"으로 서술, 모델의 "의견"이나 사회적 실재의 직접 증명으로 확대 해석하지 않음 |

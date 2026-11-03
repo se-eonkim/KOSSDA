@@ -15,7 +15,7 @@
 
 ## 탐색 — static vs. contextual 방법 선택 과정 (s2\~s5)
 
-WEAT를 처음에 contextual sentence embedding(KoSimCSE)으로 시도했으나 신호가 죽는 것을 확인하고, 정적 임베딩(m1)으로 전환하게 된 과정이다. [README의 static/contextual dissociation 발견](../../README.md#핵심-발견)의 근거 코드.
+WEAT를 처음에 contextual sentence embedding(KoSimCSE)으로 시도했으나 신호가 죽는 것을 확인하고, 정적 임베딩(m1)으로 전환하게 된 과정이다. [README의 static/contextual dissociation 발견](../../README.ko.md#핵심-발견)의 근거 코드.
 
 | 파일 | 역할 | 출력 |
 |---|---|---|
